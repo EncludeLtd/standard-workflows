@@ -1,0 +1,27 @@
+on:
+  workflow_call:
+    secrets:
+      packaging-org-auth-url:
+        required: True
+      dev-hub-auth-url: 
+        required: True
+
+jobs:
+  upload-beta-release-1gp:
+    name: "Upload Beta Release (1GP)"
+    environment: packaging
+    concurrency: packaging
+    runs-on: ubuntu-latest
+    steps:
+      - uses: cumulus-actions/release-beta-1gp@v1
+        with:
+          packaging-org-auth-url: '${{ secrets.packaging-org-auth-url }}'
+  beta-test:
+    name: "Beta Test"
+    needs:
+      - upload-beta-release-1gp
+    runs-on: ubuntu-latest
+    steps: 
+      - uses: cumulus-actions/beta-test@v1
+        with:
+          dev-hub-auth-url: '${{ secrets.dev-hub-auth-url }}'
